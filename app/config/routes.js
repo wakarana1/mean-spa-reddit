@@ -1,6 +1,6 @@
 var express = require('express');
 var apiRouter = express.Router(); // get an instance of express router
-var articlesController = require('../controllers/articles');
+var articlesController = require('../controllers/articlesController');
 
 // bring in our model so we can do things to it
 var Article = require('../models/article');
