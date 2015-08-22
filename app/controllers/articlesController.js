@@ -1,50 +1,66 @@
-var Article = require('../models/Article');
+var Article = require('../models/article');
 
-function index(request, response) {
-    Article.find(function(error, articles) {
-        if (error) console.error('could not get articles because', error);
+function articleById(request, response, next, id) {
+  Article.findById(id, function(error, article) {
+    if (error) console.error('Could not update article b/c:', error);
 
-        response.json(articles);
-    });
+    request.article = article; // store article in request
+    next(); // callback to move onto next handler
+  });
 }
 
 function create(request, response) {
-        console.log(request.body);
-        var article = new Article(request.body);
-        article.save(function(error) {
-            if(error) console.error('Could not create because', error);
+  // create a new article based of user data
+  var article = new Article(request.body);
 
-            response.json({message: 'Article successfully created'});
-        });
-    }
+  // save the article
+  article.save(function(error) {
+    if (error) console.error('Not able to create article b/c:', error);
+
+    response.json({message: 'Article successfully created'});
+  });
+}
+
+function index(request, response) {
+  Article.find(function(error, articles) {
+    if (error) console.error('Could not retrieve articles b/c:', error);
+
+    response.json(articles);
+  });
+}
 
 function show(request, response) {
-        Article.findById(request.params.article_id, function(error, article) {
-            if (error) console.error('could not get article');
-
-            response.json(article);
-        });
-    }
+  response.json(request.article);
+}
 
 function update(request, response) {
-        var data = request.body;
+  var data = request.body;
+  var article = request.article;
 
-        Article.findById(request.params.article_id, function(error, article) {
-            if (error) console.error('could not update article');
-            Object.keys(data).forEach(function(key) {
-                article.set(key, data[key]); // set replaces the value of a field with the specified value
-            });
-            article.save(function(error) {
-                if (error) console.error('could not patch');
+  Object.keys(data).forEach(function(key) {
+    article.set(key, data[key]); // set replaces the value of a field with the specified value
+  });
 
-                response.json({message: 'article successfully update'});
-            });
-        });
-    }
+  article.save(function(error) {
+    if (error) console.error('Could not update article b/c:', error);
+
+    response.json({message: 'Article successfully updated'});
+  });
+}
+
+function destroy(request, response) {
+  Article.remove({ _id: request.params.article_id }, function(error) {
+    if (error) console.error('Could not delete article b/c:', error);
+
+    response.json({message: 'Article successfully deleted'});
+  });
+}
 
 module.exports = {
-    index: index,
-    create: create,
-    show: show,
-    update: update
+  articleById: articleById,
+  create: create,
+  index: index,
+  show: show,
+  update: update,
+  destroy: destroy
 };
