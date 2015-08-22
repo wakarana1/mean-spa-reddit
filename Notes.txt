@@ -1,0 +1,189 @@
+MEAN Stack Notes
+
+Back End build
+    Node and NPM
+    MongoDB/Data modeling
+    RESTful API
+
+Deploy
+    environment variables
+    deploy to Heroku
+
+Front-End.. and more Deploy
+    integrate Angular
+    Scope and Directives
+    Services and custom directives
+
+
+MongoDB
+    no set schema
+        add documents on the fly for new properties and value pairs
+    broken into collections, then to documents
+        documents are like js objects
+            contain properties and values
+    not as scalable
+        speed and querying
+        enterprise app like Oracle/SQL would be better since they query faster
+
+Express
+    framework
+        allows middleware
+    good for managing RESTful APIs
+    Helps create MVCs
+
+AngularJS  
+    framework created by Google
+    Unlike backbone, Angular has it all
+        databinding and templates built in
+    provides MVVM
+        model view view model
+    makes HTML more interactive
+    Built upon jQlite
+    can group HTML into components
+
+Node.JS
+    C++ library wrapped with JS
+    compile JS code into machine code
+    Javascript allows node to set up servers that are event based
+    non-blocking i/o
+        allows input output to work simultaneously and not block each other
+    NPM
+        provides commandline interface
+        provides access to public repos
+        uses package.json files
+
+HTTP Methods
+    user sends requests off to the server with HTTP Requests
+    GET - get data
+    POST - send data that needs to be saved
+    DELETE - remove data
+    PATCH - update
+
+## Node ##
+
+creating a server with just Node.JS
+    // in server.js
+    var http = require('http');
+        makes http library available to node
+    http.createServer(function(request, response){
+        response.end('Hello World!');
+    }).listen(3000) //creates a localhost:3000
+
+    console.log('Server is running on port 3000');
+        // if server crashes, console.log won't show
+
+    // in bash
+    node server.js
+
+## Node with Express ##
+    //handrolled
+    create package.json folder in root folder
+    two important parts of package.json
+        "name": "of-the-app",
+        "version": "0.0.1"
+
+    //in bash
+    npm install --save express
+        //creates node_modules folder
+
+    //in server.js
+    var express = require('express'); //express module
+    var app = express(); //defining app as instance of express
+
+    app.get('/', function(request, response) {
+        response.send('whatever you want, I got it');
+    }); //when user arrives at the '/'(root folder)
+
+    app.listen(3000);
+
+    console.log('server is running on port 3000');
+
+    //in bash
+    nodemon server.js
+
+## Bringing in MongoDB ##
+    // bash
+    npm i --save mongoose
+
+    //create folders
+        app>models>Article.js
+    // Article is capitalized so you know it's a model
+
+    // Article.js
+    var mongoose = require('mongoose');
+
+    var ArticleSchema = new mongoose.Schema ({
+        title: String,
+        created_date: Date,
+        votes: Number,
+        author: String
+    });
+
+    module.export = mongoose.model('Article', ArticleSchema);
+        //when exported, it refers to as Article and it is made up of ArticleSchema
+
+REST
+    stateless HTTP protocol
+        made up of request and response
+    both clientside and serverside are stateless
+        they don't configure each other or alter states
+API
+    application programming interface
+
+Gateway to apps is through routes
+
+## API and Routes ##
+
+    // server.js
+    var router = express.Router();
+
+    // remove app.get test
+
+    apiRouter.route('/articles')
+        .post(function(request, response) {
+            console.log(request.body);
+        });
+
+    //bash
+    npm i --save body-parser
+
+    //server.js
+    var bodyParser = require('body-parser');
+    // to handle request body
+
+    app.use(bodyParser.urlencoded({ extended: true}));
+    app.use(bodyParser.json()); // tells body-parser to just deal with json
+
+    // POSTMAN
+
+    localhost:3000/articles
+    POST
+    >Body > urlencoded
+    type out key value pairs to test
+
+    // server.js
+    var mongoose = require ('mongoose');
+
+    mongoose.connect('mongodb://localhost:27017/article-app'); //mongodb protocol connecting to mongodb port, to mongodb database app
+
+    var Article = require('./app/models/Article'); // route 'Article'
+
+    //add to apiRouter.route
+        var article = new Article(request.body);
+        article.save(function(error) {
+            if(error) console.error('Could not create because', error);
+            
+            response.json({message: 'Article successfully created'});
+        });
+    //server.js
+    apiRouter.route('/article/:article_id')
+    .get(function(request, response) {
+        var id = request.params.article_id;
+        Article.findById(id, function(error, article) {
+            if (error) console.error('could not get article');
+
+            response.json(article);
+        });
+    });
+
+
