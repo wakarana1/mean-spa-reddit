@@ -4,7 +4,7 @@ var bodyParser = require('body-parser'); // express is an extremely minimalist f
 var mongoose   = require('mongoose');
 
 // pull correct settings per environment
-var config = require('./app/config/config.js');
+var config = require('./app/config/config');
 var environmentSettings = config.config();
 
 app.use(express.static(__dirname + '/public'));
