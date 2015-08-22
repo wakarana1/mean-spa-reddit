@@ -3,7 +3,7 @@ var apiRouter = express.Router(); // get an instance of express router
 var articlesController = require('../controllers/articlesController');
 
 // bring in our model so we can do things to it
-var Article = require('../models/article');
+var Article = require('../models/Article');
 
 // param middleware is called before use middleware
 // use param to refactor findById code
